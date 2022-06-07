@@ -1,0 +1,62 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}TOPページ{% endblock title %}
+
+
+{% block content %}
+
+
+<nav class="navbar sticky-top navbar-light bg-info bg-gradient">
+    <div class="container-fluid">
+      <a href="/" class="navbar-brand" href="#">図書管理アプリ</a>
+      <a href="/logout" role="button" class="navbar-brand" style="float: right;">ログアウト</a>
+      <a href="/create" role="button" class="navbar-brand" style="float: right;">新規登録画面</a>
+      <a href="/isbn" role="button" class="navbar-brand" style="float: right;">ISBN登録画面</a>
+      <form method="POST" class="navbar-brand" style="width:50%;padding:9px;">
+        <input type="text" name="search-title" class="form-control" style="width:25%;margin-right:0px;display:inline-block;" placeholder="キーワードを入力">
+        <span><button class="btn btn-success" type="button" id="button-addon2">検索</button></span>
+      </form>
+    </div>
+  </nav>   
+
+<div class = "container">
+    <table class="table">
+        <thead>
+            <tr>
+                
+                <th scope="col">タイトル</th>
+                <th scope="col">著者</th>
+            </tr>
+        </thead>
+        <tbody>
+            <table class="table table-striped">
+                {% for book in books.items %}
+                    <tr>
+                        
+                        <td><h3>{{ book.title }}</h3></td>
+                        <td><h3>{{ book.creator }}</h3></td>
+                        <td><h3><a href="/{{book.id}}/delete" role=" = button">削除</a></h3></td>
+                    </tr>
+                {% endfor %}
+            
+            </table>
+        </tbody>
+    </table>
+    
+    <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        {% for page in books.iter_pages(left_edge=2, left_current=2, right_current=5, right_edge=2) %}
+            {% if page %}
+                {% if page != books.page %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('books.index_pages', page_num=page) }}">{{ page }}</a></li>
+                {% else %}
+                    <li class="page-item active"><a class="page-link">{{ page }}</a></li>
+                {% endif %}
+            {% else %}
+                <span> ... </span>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    </nav>
+</div>
+
+{% endblock %}

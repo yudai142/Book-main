@@ -1,0 +1,13 @@
+{% extends "bootstrap/base.html" %}
+
+{% block content%}
+<h1>新規登録</h1>
+<form method = "POST" >
+    <label for="title">タイトル</label>
+    <input type="text" name="title">
+    <label for="creator">著者</label>
+    <input type="text" name="creator">
+    <input type="submit" value="新規登録">
+</form>
+
+{% endblock %}

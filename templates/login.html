@@ -1,0 +1,22 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}ログイン画面{% endblock title %}
+
+{% block content%}
+<link rel="stylesheet" href="static/css/sign_login.css">
+
+<div class = "container">
+	<div class="wrapper">
+		<form method="POST" class="form-signin">       
+		    <h3 class="form-signin-heading">ログイン画面</h3>
+			  <hr class="colorgraph"><br>
+			  
+			  <input type="text" class="form-control" name="username" placeholder="ユーザー名" required="" autofocus="" />
+			  <input type="password" class="form-control" name="password" placeholder="パスワード" required=""/>     		  
+			 
+			  <button class="btn btn-lg btn-primary btn-block" value="ログイン" type="submit">ログイン</button>  			
+		</form>			
+	</div>
+</div>
+
+{% endblock %}
+
