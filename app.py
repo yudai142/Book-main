@@ -21,7 +21,7 @@ import requests #ISBN 書籍情報
 import xml.etree.ElementTree as et 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') or 'sqlite:///blog.db'
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['ITEMS_PER_PAGE'] = 10
 db = SQLAlchemy(app)

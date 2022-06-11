@@ -119,6 +119,7 @@ PySocks = "==1.7.1"
 Send2Trash = "==1.8.0"
 SQLAlchemy = "==1.4.35"
 Werkzeug = "==2.1.1"
+psycopg2 = "*"
 
 [dev-packages]
 
