@@ -1,5 +1,5 @@
 from flask import Flask #flask使用
-from flask import render_template, request , redirect #htmlテンプレート機能を使用
+from flask import render_template, request , redirect, session #htmlテンプレート機能を使用
 from flask_sqlalchemy import SQLAlchemy #DB作成およびSQL操作のため
 
 from crypt import methods #パスワードの検証
@@ -46,15 +46,40 @@ def load_user(user_id):
     return User.query.get(int(user_id))
     
 
-@app.route("/", methods=['GET'])
+@app.route("/", methods=['GET','POST'])
 def index():
-    books = Book.query.paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
-    return render_template('index.html', books=books)
+    if request.method == 'POST' and request.form.get('search-title'):
+      books = Book.query.filter(Book.title.like('%' + request.form.get('search-title') + '%'))
+      books = books.order_by(Book.title.desc()).paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+      session['title'] = request.form.get('search-title')
+      return render_template('search_results.html', books=books)
+    else:
+      books = Book.query.paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+      return render_template('index.html', books=books)
 
 @app.route('/pages/<int:page_num>', methods=['GET','POST'])
 def index_pages(page_num):
-    books = Book.query.paginate(page=page_num, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
-    return render_template('index.html', books=books)
+    if request.method == 'POST' and request.form.get('search-title'):
+      books = Book.query.filter(Book.title.like('%' + request.form.get('search-title') + '%'))
+      books = books.order_by(Book.title.desc()).paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+      session['title'] = request.form.get('search-title')
+      return render_template('search_results.html', books=books)
+    else:
+      books = Book.query.paginate(page=page_num, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+      return render_template('index.html', books=books)
+
+@app.route('/searches/<int:page_num>', methods=['GET','POST'])
+def search_pages(page_num):
+    if request.method == 'POST' and request.form.get('search-title'):
+      books = Book.query.filter(Book.title.like('%' + request.form.get('search-title') + '%'))
+      books = books.order_by(Book.title.desc()).paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+      session['title'] = request.form.get('search-title')
+      return render_template('search_results.html', books=books)
+    else:
+      session_title = session.get('title')
+      books = Book.query.filter(Book.title.like('%' + session_title + '%'))
+      books = books.order_by(Book.title.desc()).paginate(page=page_num, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+      return render_template('search_results.html', books=books)
 
 @app.route("/signup",methods=['GET','POST'])
 def signup():
