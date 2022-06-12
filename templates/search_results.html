@@ -19,6 +19,18 @@
   </nav>
 
 <div class = "container">
+    <form method="POST" class="text-right">
+      {% if session['sort'] == "asc" %}
+        <button class="btn btn-primary" type="submit" name="sort" value="asc" disabled>昇順</button>
+      {% else %}
+        <button class="btn btn-primary" type="submit" name="sort" value="asc">昇順</button>
+      {% endif %}
+      {% if session['sort'] == "desc" %}
+        <button class="btn btn-danger" type="submit" name="sort" value="desc" disabled>降順</button>
+      {% else %}
+        <button class="btn btn-danger" type="submit" name="sort" value="desc">降順</button>
+      {% endif %}
+    </form>
     <table class="table">
         <thead>
             <tr>

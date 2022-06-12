@@ -49,10 +49,30 @@ class Book(db.Model): #Bookテーブル作成
 
 def search_title(search_title):
     books = Book.query.filter(Book.title.like('%' + search_title + '%'))
-    books = books.order_by(Book.title.desc()).paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+    books = books.paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
     session['title'] = search_title
+    session['sort'] = ""
     return books
-    
+
+def sort_title(sort_value, search_title = None):
+    if search_title != None:
+      books = Book.query.filter(Book.title.like('%' + search_title + '%'))
+      if sort_value == "asc":
+        books = books.order_by(Book.title.asc())
+        session['sort'] = "asc"
+      elif sort_value == "desc":
+        books = books.order_by(Book.title.desc())
+        session['sort'] = "desc"
+    else:
+      if sort_value == "asc":
+        books = Book.query.order_by(Book.title.asc())
+        session['sort'] = "asc"
+      elif sort_value == "desc":
+        books = Book.query.order_by(Book.title.desc())
+        session['sort'] = "desc"
+    return books
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -63,7 +83,18 @@ def index():
     if request.method == 'POST' and request.form.get('search-title'):
       books = search_title(request.form.get('search-title'))
       return render_template('search_results.html', books=books)
+    elif request.method == 'POST' and request.form.get('sort'):
+      if session['title'] != "":
+        books = sort_title(request.form.get('sort'), session['title'])
+        books = books.paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+        return render_template('search_results.html', books=books)
+      else:
+        books = sort_title(request.form.get('sort'))
+      books = books.paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+      return render_template('index.html', books=books)
     else:
+      session['title'] = ""
+      session['sort'] = ""
       books = Book.query.paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
       return render_template('index.html', books=books)
 
@@ -72,8 +103,17 @@ def index_pages(page_num):
     if request.method == 'POST' and request.form.get('search-title'):
       books = search_title(request.form.get('search-title'))
       return render_template('search_results.html', books=books)
+    elif request.method == 'POST' and request.form.get('sort'):
+      books = sort_title(request.form.get('sort'))
+      books = books.paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+      return render_template('index.html', books=books)
     else:
-      books = Book.query.paginate(page=page_num, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+      if session['sort'] == "asc" or session['sort'] == "desc":
+        books = sort_title(session['sort'])
+      else:
+        books = Book.query.paginate(page=page_num, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+        return render_template('index.html', books=books)
+      books = books.paginate(page=page_num, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
       return render_template('index.html', books=books)
 
 @app.route('/searches/<int:page_num>', methods=['GET','POST'])
@@ -81,9 +121,13 @@ def search_pages(page_num):
     if request.method == 'POST' and request.form.get('search-title'):
       books = search_title(request.form.get('search-title'))
       return render_template('search_results.html', books=books)
+    elif request.method == 'POST' and request.form.get('sort'):
+      books = sort_title(request.form.get('sort'), session.get('title'))
+      books = books.paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+      return render_template('search_results.html', books=books)
     else:
-      books = Book.query.filter(Book.title.like('%' + session.get('title') + '%'))
-      books = books.order_by(Book.title.desc()).paginate(page=page_num, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
+      books = sort_title(session['sort'], session.get('title'))
+      books = books.paginate(page=page_num, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
       return render_template('search_results.html', books=books)
 
 @app.route("/signup",methods=['GET','POST'])
