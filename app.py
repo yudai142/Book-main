@@ -37,15 +37,25 @@ login_manager.init_app(app)
 
 
 class User(UserMixin,db.Model): #userテーブル作成
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), unique = True)
     password = db.Column(db.String(12))
 
 class Book(db.Model): #Bookテーブル作成
+    __tablename__ = 'book'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), unique = True)
     creator = db.Column(db.String(15))
-    
+    lends = db.relationship("Lend", backref="book")
+
+class Lend(db.Model):
+    __tablename__ = 'lend'
+    id = db.Column(db.Integer, primary_key=True)
+    books_id = db.Column(db.Integer, db.ForeignKey('book.id'))
+    username = db.Column(db.String)
+    period = db.Column(db.Date)
+    books = db.relationship("Book")
 
 def search_title(search_title):
     books = Book.query.filter(Book.title.like('%' + search_title + '%'))

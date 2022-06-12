@@ -31,26 +31,22 @@
         <button class="btn btn-danger" type="submit" name="sort" value="desc">降順</button>
       {% endif %}
     </form>
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
-                
                 <th scope="col">タイトル</th>
                 <th scope="col">著者</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
-            <table class="table table-striped">
-                {% for book in books.items %}
-                    <tr>
-                        
-                        <td><h3>{{ book.title }}</h3></td>
-                        <td><h3>{{ book.creator }}</h3></td>
-                        <td><h3><a href="/{{book.id}}/delete" role=" = button">削除</a></h3></td>
-                    </tr>
-                {% endfor %}
-            
-            </table>
+            {% for book in books.items %}
+                <tr>
+                    <td><h3>{{ book.title }}</h3></td>
+                    <td><h3>{{ book.creator }}</h3></td>
+                    <td><h3><a href="/{{book.id}}/delete" class="btn btn-danger">削除</a></h3></td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
     
