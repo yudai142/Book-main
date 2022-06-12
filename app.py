@@ -51,7 +51,7 @@ def search_title(search_title):
     books = Book.query.filter(Book.title.like('%' + search_title + '%'))
     books = books.paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
     session['title'] = search_title
-    session['sort'] = ""
+    session['sort'] = None
     return books
 
 def sort_title(sort_value, search_title = None):
@@ -84,7 +84,7 @@ def index():
       books = search_title(request.form.get('search-title'))
       return render_template('search_results.html', books=books)
     elif request.method == 'POST' and request.form.get('sort'):
-      if session['title'] != "":
+      if session['title'] != None:
         books = sort_title(request.form.get('sort'), session['title'])
         books = books.paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
         return render_template('search_results.html', books=books)
@@ -93,8 +93,8 @@ def index():
       books = books.paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
       return render_template('index.html', books=books)
     else:
-      session['title'] = ""
-      session['sort'] = ""
+      session['title'] = None
+      session['sort'] = None
       books = Book.query.paginate(page=1, per_page=app.config['ITEMS_PER_PAGE'], error_out=False)
       return render_template('index.html', books=books)
 
